@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - توب ستيل</title>
+    <link rel="stylesheet" href="css/style-rtl.css">
+    <link rel="stylesheet" href="css/admin.css">
+        <!-- Cairo Font (Most Popular for Arabic) -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Tajawal Font (Clean & Modern) -->
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+<!-- Amiri Font (Elegant & Traditional) -->
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Changa Font (Modern & Geometric) -->
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+
+    <div class="admin-container">
+        <!-- Login Section -->
+        <div id="login-section" class="admin-section">
+            <div class="login-form">
+                <h2>تسجيل دخول المشرف</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">اسم المستخدم:</label>
+                        <input type="text" id="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">كلمة المرور:</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="cta-button">تسجيل الدخول</button>
+                </form>
+                <p class="login-note">بيانات الاعتماد الافتراضية: admin / password123</p>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard (Hidden until login) -->
+        <div id="admin-dashboard" class="admin-section hidden">
+            <div class="dashboard-header">
+                <h2>لوحة تحكم المشرف</h2>
+                <button id="logout-btn" class="logout-button">تسجيل الخروج</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-button active" data-tab="home-content">محتوى الصفحة الرئيسية</button>
+                <button class="tab-button" data-tab="hero-slideshow">شرائح الصفحة الرئيسية</button>
+                <button class="tab-button" data-tab="about-content">محتوى صفحة من نحن</button>
+                <button class="tab-button" data-tab="categories">فئات المنتجات</button>
+                <button class="tab-button" data-tab="products">المنتجات</button>
+                <button class="tab-button" data-tab="achievements-content">الإنجازات</button>
+                <button class="tab-button" data-tab="footer-content">محتوى التذييل</button>
+            </div>
+
+            <!-- Home Content Tab -->
+            <div id="home-content" class="tab-content active">
+                <h3>تحرير محتوى الصفحة الرئيسية</h3>
+                <form id="home-content-form">
+                    <div class="form-group">
+                        <label>عنوان الموقع:</label>
+                        <input type="text" id="hero-title-input" data-key="hero-title">
+                    </div>
+                    <div class="form-group">
+                        <label>نص الموقع الفرعي:</label>
+                        <textarea id="hero-subtitle-input" data-key="hero-subtitle"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان المقدمة:</label>
+                        <input type="text" id="intro-title-input" data-key="intro-title">
+                    </div>
+                    <div class="form-group">
+                        <label>نص المقدمة:</label>
+                        <textarea id="intro-text-input" data-key="intro-text"></textarea>
+                    </div>
+                    <button type="submit" class="cta-button">حفظ محتوى الصفحة الرئيسية</button>
+                </form>
+            </div>
+
+            <div id="hero-slideshow" class="tab-content">
+            <h3>إدارة شرائح الصفحة الرئيسية</h3>
+            <p class="admin-note">يمكنك إضافة وتعديل وحذف شرائح الصفحة الرئيسية. فقط الشرائح النشطة سيتم عرضها.</p>
+
+            <!-- Sliedshow Tab -->
+        <div class="slides-management">
+            <h4>إضافة شريحة جديدة</h4>
+            <form id="add-slide-form">
+                <div class="form-group">
+                    <label>رابط الصورة:</label>
+                    <input type="text" id="slide-image" required placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <input type="text" id="slide-title" required placeholder="عنوان الشريحة">
+                </div>
+                <div class="form-group">
+                    <label>النص الفرعي:</label>
+                    <textarea id="slide-subtitle" required placeholder="النص الفرعي للشريحة"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="slide-active" checked>
+                        شريحة نشطة
+                    </label>
+                </div>
+                <button type="submit" class="cta-button">إضافة شريحة</button>
+            </form>
+
+            <div class="slides-list">
+                <h4>الشرائح الحالية</h4>
+                <div id="slides-list-container">
+                    <!-- Slides will be loaded here -->
+                </div>
+            </div>
+            </div>
+        </div>
+
+            <!-- About Content Tab -->
+            <div id="about-content" class="tab-content">
+                <h3>تحرير محتوى صفحة من نحن</h3>
+                <form id="about-content-form">
+                    <div class="form-group">
+                        <label>عنوان التاريخ:</label>
+                        <input type="text" id="about-history-title-input" data-key="about-history-title">
+                    </div>
+                    <div class="form-group">
+                        <label>نص التاريخ:</label>
+                        <textarea id="about-history-text-input" data-key="about-history-text"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان المهمة:</label>
+                        <input type="text" id="about-mission-title-input" data-key="about-mission-title">
+                    </div>
+                    <div class="form-group">
+                        <label>نص المهمة:</label>
+                        <textarea id="about-mission-text-input" data-key="about-mission-text"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان الرؤية:</label>
+                        <input type="text" id="about-vision-title-input" data-key="about-vision-title">
+                    </div>
+                    <div class="form-group">
+                        <label>نص الرؤية:</label>
+                        <textarea id="about-vision-text-input" data-key="about-vision-text"></textarea>
+                    </div>
+                    <button type="submit" class="cta-button">حفظ محتوى من نحن</button>
+                </form>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="categories" class="tab-content">
+                <h3>إدارة فئات المنتجات</h3>
+                <form id="add-category-form">
+                    <div class="form-group">
+                        <label>اسم الفئة:</label>
+                        <input type="text" id="category-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>وصف الفئة:</label>
+                        <textarea id="category-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>رابط صورة الفئة:</label>
+                        <input type="text" id="category-image" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <button type="submit" class="cta-button">إضافة فئة</button>
+                </form>
+
+                <div class="categories-list">
+                    <h4>الفئات الحالية</h4>
+                    <div id="categories-list-container">
+                        <!-- Categories will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="products" class="tab-content">
+                <h3>إدارة المنتجات</h3>
+                <form id="add-product-form">
+                    <div class="form-group">
+                        <label>اختر الفئة:</label>
+                        <select id="product-category" required>
+                            <option value="">اختر فئة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>اسم المنتج:</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>وصف المنتج:</label>
+                        <textarea id="product-description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>المواصفات:</label>
+                        <textarea id="product-specs" placeholder="الحجم: 2-48 بوصة&#10;المادة: الصلب الكربوني&#10;المعايير: API 5L"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>السعر:</label>
+                        <input type="text" id="product-price" placeholder="مثال: 500 أو 500-2000 أو ٥٠٠-٢٠٠٠">
+                        <small class="form-help">يمكنك إدخال السعر بأي صيغة وسيتم تحويله تلقائياً إلى جنيه مصري</small>
+                    </div>
+                    <div class="form-group">
+                        <label>رابط صورة المنتج:</label>
+                        <input type="text" id="product-image" placeholder="https://example.com/product.jpg">
+                    </div>
+                    <button type="submit" class="cta-button">إضافة منتج</button>
+                </form>
+
+                <div class="products-list">
+                    <h4>المنتجات الحالية</h4>
+                    <div id="products-list-container">
+                        <!-- Products will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Tab -->
+            <div id="achievements-content" class="tab-content">
+                <h3>تحرير محتوى الإنجازات</h3>
+                <form id="achievements-content-form">
+                    <div class="form-group">
+                        <label>عنوان المشاريع:</label>
+                        <input type="text" id="projects-title-input" data-key="projects-title">
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان الشهادات:</label>
+                        <input type="text" id="certifications-title-input" data-key="certifications-title">
+                    </div>
+                    <div class="form-group">
+                        <label>عنوان المحطات:</label>
+                        <input type="text" id="milestones-title-input" data-key="milestones-title">
+                    </div>
+                    <button type="submit" class="cta-button">حفظ محتوى الإنجازات</button>
+                </form>
+            </div>
+
+
+                <!-- In admin.html - Update the footer-content tab -->
+    <div id="footer-content" class="tab-content">
+        <h3>إدارة محتوى التذييل</h3>
+        <p class="admin-note">يمكنك تعديل جميع محتويات التذييل الظاهرة في جميع صفحات الموقع.</p>
+        
+        <form id="footer-content-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>اسم الشركة:</label>
+                    <input type="text" id="footer-companyName-input" data-key="companyName" required>
+                </div>
+                <div class="form-group">
+                    <label>وصف الشركة:</label>
+                    <textarea id="footer-companyDescription-input" data-key="companyDescription" required></textarea>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>البريد الإلكتروني:</label>
+                    <input type="email" id="footer-email-input" data-key="email" required>
+                </div>
+                <div class="form-group">
+                    <label>الهاتف:</label>
+                    <input type="text" id="footer-phone-input" data-key="phone" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>العنوان:</label>
+                <textarea id="footer-address-input" data-key="address" required></textarea>
+            </div>
+            
+            <h4>روابط وسائل التواصل</h4>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>رابط الفيسبوك:</label>
+                    <input type="url" id="footer-facebook-input" data-key="facebook">
+                </div>
+           
+            </div>
+            
+      
+            
+            <div class="form-group">
+                <label>نص حقوق النشر:</label>
+                <input type="text" id="footer-copyright-input" data-key="copyright" required placeholder="&copy; 2024 توب ستيل. جميع الحقوق محفوظة.">
+            </div>
+            
+            <button type="submit" class="cta-button">حفظ محتوى التذييل</button>
+        </form>
+    </div>
+
+        </div>
+    </div>
+
+
+    <script src="js/navbar.js"></script>
+
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

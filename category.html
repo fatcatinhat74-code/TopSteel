@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فئة المنتج - توب ستيل</title>
+    <link rel="stylesheet" href="css/style-rtl.css">
+        <!-- Cairo Font (Most Popular for Arabic) -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Tajawal Font (Clean & Modern) -->
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+<!-- Amiri Font (Elegant & Traditional) -->
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Changa Font (Modern & Geometric) -->
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <section class="page-header">
+        <div class="container">
+            <h1 id="category-title">فئة المنتج</h1>
+            <p id="category-description">استكشف منتجاتنا في هذه الفئة</p>
+        </div>
+    </section>
+
+    <section class="category-products">
+        <div class="container">
+            <div class="products-grid" id="products-container">
+                <!-- Products will be loaded dynamically -->
+            </div>
+            <div class="text-center">
+                <a href="products.html" class="cta-button secondary">العودة إلى الفئات</a>
+            </div>
+        </div>
+    </section>
+
+
+  <script src="js/navbar.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCategoryProducts();
+        });
+    </script>
+</body>
+</html>
