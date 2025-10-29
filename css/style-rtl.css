@@ -1,0 +1,1105 @@
+/* RTL Styles for Arabic Website with Arabic Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', 'Tajawal', 'Amiri', 'Changa', 'Arial', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    color: #333;
+    background-color: #fff;
+    direction: rtl;
+    text-align: right;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Navigation */
+.navbar {
+    background: #2c3e50;
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.nav-logo h2 {
+    color: #ecf0f1;
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 700;
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-link {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 1.1rem;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.admin-btn {
+    background: #e74c3c;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    color: white !important;
+    font-weight: 700;
+}
+
+.admin-btn:hover {
+    background: #c0392b;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.hamburger span {
+    width: 25px;
+    height: 3px;
+    background: #ecf0f1;
+    margin: 3px 0;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+/* Hero Section with Background Image */
+.hero {
+    position: relative;
+    color: white;
+    padding: 150px 0 100px;
+    text-align: center;
+    margin-top: 70px;
+    background-image: url('../images/hero-banner.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.8) 0%, rgba(44, 62, 80, 0.9) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero-content h1 {
+    font-size: 3.2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    line-height: 1.3;
+    color:white
+}
+
+.hero-content p {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    line-height: 1.8;
+    font-weight: 400;
+}
+
+/* Buttons */
+.cta-button {
+    display: inline-block;
+    background: #e74c3c;
+    color: white;
+    padding: 15px 35px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+}
+
+.cta-button:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+.cta-button.secondary {
+    background: #3498db;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.cta-button.secondary:hover {
+    background: #2980b9;
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.3;
+}
+
+h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+}
+
+h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+h4 {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* Sections */
+.intro-section,
+.services-section,
+.featured-products,
+.about-content,
+.products-categories,
+.category-products,
+.achievements-content {
+    padding: 80px 0;
+}
+
+.page-header {
+    background: #f8f9fa;
+    padding: 120px 0 60px;
+    text-align: center;
+    margin-top: 70px;
+}
+
+.page-header h1 {
+    font-size: 2.8rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.page-header p {
+    font-size: 1.3rem;
+    color: #7f8c8d;
+    font-weight: 400;
+}
+
+/* Grid Layouts */
+.services-grid,
+.products-grid,
+.categories-grid,
+.features-grid,
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* Cards */
+.service-card,
+.product-card,
+.category-card,
+.feature-card,
+.achievement-card {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: right;
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+}
+
+.service-card:hover,
+.product-card:hover,
+.category-card:hover,
+.feature-card:hover,
+.achievement-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.service-card h3,
+.product-card h3,
+.category-card h3,
+.feature-card h3,
+.achievement-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.service-card p,
+.product-card p,
+.category-card p,
+.feature-card p,
+.achievement-card p {
+    color: #5d6d7e;
+    line-height: 1.7;
+    font-size: 1.1rem;
+    font-weight: 400;
+}
+
+/* Product and Category Cards */
+.category-card {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.category-card img,
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit:contain;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #e74c3c;
+    margin: 1rem 0;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+}
+
+.product-specs {
+    background: #f8f9fa;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: right;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 3rem auto;
+}
+
+.timeline-item {
+    display: flex;
+    margin-bottom: 2rem;
+    align-items: flex-start;
+}
+
+.timeline-year {
+    background: #3498db;
+    color: white;
+    padding: 0.7rem 1.2rem;
+    border-radius: 25px;
+    font-weight: 700;
+    min-width: 90px;
+    text-align: center;
+    margin-left: 2rem;
+    margin-right: 0;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    font-size: 1.1rem;
+}
+
+.timeline-content {
+    flex: 1;
+    background: white;
+    padding: 1.8rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    font-family: 'Cairo', sans-serif;
+}
+
+.timeline-content h3 {
+    color: #2c3e50;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+}
+
+.achievement-year {
+    color: #3498db;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+}
+
+/* Footer Enhanced Styles */
+.footer {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #ecf0f1;
+    padding: 3rem 0 1rem;
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 2rem;
+    
+}
+
+
+.footer-section {
+    padding: 0 1rem;
+}
+
+.footer-section h3 {
+    color: #3498db;
+    margin-bottom: 1.2rem;
+    font-weight: 700;
+    font-size: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 50px;
+    height: 3px;
+    background: #3498db;
+    border-radius: 2px;
+}
+
+.footer-section h4 {
+    color: #3498db;
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-section h4::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 2px;
+    background: #3498db;
+    border-radius: 2px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding-right: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.8rem;
+    transition: transform 0.3s ease;
+}
+
+.footer-section ul li:hover {
+    transform: translateX(-5px);
+}
+
+.footer-section a {
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 400;
+    display: inline-block;
+    padding: 0.2rem 0;
+}
+
+.footer-section a:hover {
+    color: #3498db;
+    transform: translateX(-3px);
+}
+
+.footer-section p {
+    line-height: 1.8;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+.social-link {
+    position: relative;
+    padding-right: 1.5rem !important;
+}
+
+.social-link::before {
+    content: '›';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #3498db;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.social-link:hover::before {
+    transform: translateY(-50%) translateX(-3px);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(52, 152, 219, 0.3);
+    font-weight: 400;
+    margin-top: 2rem;
+}
+
+.footer-bottom p {
+    color: #bdc3c7;
+    font-size: 0.9rem;
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+    }
+    
+    .footer-section {
+        padding: 0;
+        text-align: center;
+    }
+    
+    .footer-section h3::after,
+    .footer-section h4::after {
+        right: 50%;
+        transform: translateX(50%);
+    }
+    
+    .footer-section ul li:hover {
+        transform: none;
+    }
+    
+    .footer-section a:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .footer-section {
+        text-align: center;
+    }
+    
+    .footer-section h3 {
+        font-size: 1.3rem;
+    }
+    
+    .footer-section h4 {
+        font-size: 1.1rem;
+    }
+}
+/* Text Alignment */
+.text-center {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu {
+        position: fixed;
+        right: -100%;
+        left: auto;
+        top: 70px;
+        flex-direction: column;
+        background: #2c3e50;
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: 0 10px 27px rgba(0,0,0,0.05);
+        padding: 2rem 0;
+        gap: 0;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 1rem 2rem;
+        border-radius: 0;
+        font-size: 1.2rem;
+    }
+
+    .logo-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2.4rem;
+    }
+
+    .hero-content p {
+        font-size: 1.2rem;
+    }
+
+    .hero {
+        padding: 120px 0 80px;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    .timeline-item {
+        flex-direction: column;
+    }
+
+    .timeline-year {
+        margin-left: 0;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-container {
+        gap: 0.5rem;
+    }
+
+    .logo-img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .nav-logo h2 {
+        font-size: 1.3rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+
+    .cta-button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+
+    .service-card,
+    .product-card,
+    .category-card,
+    .feature-card,
+    .achievement-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* Hidden utility class */
+.hidden {
+    display: none !important;
+}
+
+/* Additional Arabic typography improvements */
+p, li, span {
+    font-family: 'Cairo', 'Tajawal', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+strong, b {
+    font-weight: 700;
+}
+
+.about-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+#intro-text {font-size:1.5rem;}
+
+
+/* Hero Slideshow Styles */
+.hero-slideshow {
+    position: relative;
+    color: white;
+    padding: 150px 0 100px;
+    text-align: center;
+    margin-top: 70px;
+    height: 600px;
+    overflow: hidden;
+}
+
+.hero-slides-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.slide-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.slide-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgb(52 152 219 / 42%) 0%, rgba(44, 62, 80, 0.9) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    transform: translateY(-50px);
+}
+
+.hero-content h1 {
+    font-size: 3.2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    line-height: 1.3;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-content p {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    line-height: 1.8;
+    font-weight: 400;
+    animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+.hero-content .cta-button {
+    animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+/* Slideshow Controls */
+.slideshow-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem;
+    transform: translateY(-50%);
+}
+
+.slide-prev,
+.slide-next {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide-prev:hover,
+.slide-next:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Slideshow Dots */
+.slideshow-dots {
+    position: absolute;
+    bottom: 2rem;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+.dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Slideshow */
+@media (max-width: 768px) {
+    .hero-slideshow {
+        height: 500px;
+        padding: 120px 0 80px;
+    }
+    
+    .hero-content h1 {
+        font-size: 2.4rem;
+    }
+    
+    .hero-content p {
+        font-size: 1.2rem;
+    }
+    
+    .slideshow-controls {
+        padding: 0 1rem;
+    }
+    
+    .slide-prev,
+    .slide-next {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-slideshow {
+        height: 450px;
+        padding: 100px 0 60px;
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+    
+    .slideshow-controls {
+        display: none; /* Hide arrows on very small screens */
+    }
+}
+
+
+.hero-content {
+    position: relative;
+    z-index: 100; /* Very high z-index */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    transform: translateY(-50px);
+}
+
+/* Remove the gradient from individual slides and add it to the main container */
+.hero-slideshow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgb(52 152 219 / 42%) 0%, rgba(44, 62, 80, 0.9) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Remove the gradient from slide backgrounds */
+.slide-background::before {
+    display: none;
+}
+
+.cta-button {
+    position: relative;
+    z-index: 101; /* Even higher than content */
+}
+
+/* Regular Hero Section (for non-homepage pages) */
+.hero-regular {
+    position: relative;
+    color: white;
+    padding: 150px 0 100px;
+    text-align: center;
+    margin-top: 70px;
+    height: 400px;
+    overflow: hidden;
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://images.unsplash.com/photo-1581094794322-7c6dceeecb91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+.hero-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.8) 0%, rgba(44, 62, 80, 0.9) 100%);
+    z-index: 2;
+}
+
+.hero-regular .hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero-regular .hero-content h1 {
+    font-size: 2.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    line-height: 1.3;
+}
+
+.hero-regular .hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    line-height: 1.8;
+    font-weight: 400;
+}
+
+/* Responsive Regular Hero */
+@media (max-width: 768px) {
+    .hero-regular {
+        height: 350px;
+        padding: 120px 0 80px;
+    }
+    
+    .hero-regular .hero-content h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-regular .hero-content p {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-regular {
+        height: 300px;
+        padding: 100px 0 60px;
+    }
+    
+    .hero-regular .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-regular .hero-content p {
+        font-size: 1rem;
+    }
+}
+
+/* Optional: Enhance price display for EGP */
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #e74c3c;
+    margin: 1rem 0;
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    direction: rtl;
+    unicode-bidi: embed;
+}
+
+/* Ensure proper Arabic numeral display */
+.product-price {
+    font-feature-settings: "numr";
+}
+
+/* Social icons styles */
+.social-icons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background: #3498db;
+    transform: translateY(-2px);
+}
+
+.achievement-section {
+    margin-top:100px;
+}
