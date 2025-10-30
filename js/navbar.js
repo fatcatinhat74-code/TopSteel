@@ -16,6 +16,7 @@ class Navigation {
                         <li><a href="index.html" class="nav-link">الرئيسية</a></li>
                         <li><a href="products.html" class="nav-link">المنتجات</a></li>
                         <li><a href="about.html" class="nav-link">من نحن</a></li>
+<li><a href="#footer-company-description" class="nav-link">تواصل معنا</a></li>
                     </ul>
                     <div class="hamburger">
                         <span></span><span></span><span></span>
