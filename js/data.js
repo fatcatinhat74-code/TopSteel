@@ -1,519 +1,613 @@
-// Sample data and localStorage management
+/**************************************************************
+ 🔥 DATA MANAGER – FIRESTORE COMPATIBLE (FINAL)
+**************************************************************/
+
+let db;
+if (window.firebase) {
+  db = firebase.firestore();
+  window.db = db;
+} else {
+  console.warn("⚠️ Firebase SDK not loaded yet — will retry later");
+}
+
+// =============================================================
+// DataManager Class
+// =============================================================
 class DataManager {
-    constructor() {
-        this.initializeData();
+  constructor() {
+    this.isOnline = false;
+    this.firebaseInitialized = false;
+    this.categories = [];
+    this.products = [];
+    this.slides = [];
+    this.footerContent = {};
+    this.content = {};
+    this.initialize();
+  }
+
+  async initialize() {
+    await this.initFirebase();
+    await this.initializeData();
+    console.log("✅ DataManager fully initialized");
+  }
+
+  // =============================================================
+  // 🔹 Firebase Initialization
+  // =============================================================
+  async initFirebase() {
+    try {
+      let tries = 0;
+      while (typeof firebase === "undefined" && tries < 10) {
+        await new Promise(res => setTimeout(res, 500));
+        tries++;
+      }
+      if (typeof firebase === "undefined") throw new Error("Firebase SDK not loaded");
+
+      db = firebase.firestore();
+      window.db = db;
+
+      await db.collection("websiteData").doc("connectionTest").set({
+        test: true,
+        timestamp: new Date(),
+      });
+
+      this.isOnline = true;
+      this.firebaseInitialized = true;
+      console.log("✅ Connected to Firebase Firestore");
+
+      await this.loadAllCategories();
+      await this.loadAllProducts();
+      await this.getSlides();
+      await this.loadAllDataFromFirestore();
+    } catch (error) {
+      this.isOnline = false;
+      console.warn("⚠️ Firestore not available, using localStorage:", error.message);
     }
+  }
 
-    initializeData() {
-        // Default admin credentials
-        if (!localStorage.getItem('adminCredentials')) {
-            localStorage.setItem('adminCredentials', JSON.stringify({
-                username: 'admin',
-                password: 'password123'
-            }));
-        }
+  // =============================================================
+  // 🔹 Local Initialization
+  // =============================================================
+  async initializeData() {
+    const adminCredentials = { username: "admin", password: "password123" };
+    localStorage.setItem("adminCredentials", JSON.stringify(adminCredentials));
 
-        // Default categories
-        if (!localStorage.getItem('categories')) {
-            const defaultCategories = [
-                {
-                    id: 1,
-                    name: 'الأنابيب غير الملحومة',
-                    description: 'أنابيب الصلب غير الملحومة عالية الجودة للتطبيقات عالية الضغط',
-                    image: 'https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=400&h=300&fit=crop'
-                },
-                {
-                    id: 2,
-                    name: 'الأنابيب الملحومة',
-                    description: 'أنابيب الصلب الملحومة المتينة للتطبيقات الصناعية المختلفة',
-                    image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop'
-                }
-            ];
-            localStorage.setItem('categories', JSON.stringify(defaultCategories));
-        }
+    await this.ensureDefaultData();
+  }
 
-        // In data.js - Update default products with simple prices
-        if (!localStorage.getItem('products')) {
-            const defaultProducts = [
-                {
-                    id: 1,
-                    categoryId: 1,
-                    name: 'أنبوب API 5L غير الملحوم',
-                    description: 'أنبوب غير ملحوم عالي القوة لنقل النفط والغاز',
-                    specs: 'الحجم: 2-24 بوصة\nالمادة: الصلب الكربوني\nالمعايير: API 5L, ASTM A106',
-                    price: '650-2500', // Simple format - will be auto-formatted
-                    image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop'
-                },
-                {
-                    id: 2,
-                    categoryId: 1,
-                    name: 'أنبوب الفولاذ المقاوم للصدأ غير الملحوم',
-                    description: 'أنابيب غير ملحومة مقاومة للتآكل للصناعة الكيميائية',
-                    specs: 'الحجم: 1/2-12 بوصة\nالمادة: الفولاذ المقاوم للصدأ 304/316\nالمعايير: ASTM A312',
-                    price: '1000-3500', // Simple format
-                    image: 'https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=400&h=300&fit=crop'
-                },
-                {
-                    id: 3,
-                    categoryId: 2,
-                    name: 'أنبوب الصلب ERW',
-                    description: 'أنابيب ملحومة بمقاومة كهربائية للتطبيقات الهيكلية',
-                    specs: 'الحجم: 1/2-20 بوصة\nالمادة: الصلب الكربوني\nالمعايير: ASTM A53',
-                    price: '400-1500', // Simple format
-                    image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop'
-                },
-                {
-                    id: 4,
-                    categoryId: 2,
-                    name: 'أنبوب الصلب LSAW',
-                    description: 'أنابيب ملحومة بقوس مغمور طولي للتطبيقات كبيرة القطر',
-                    specs: 'الحجم: 20-60 بوصة\nالمادة: الصلب الكربوني\nالمعايير: API 5L, ASTM A252',
-                    price: '1500-6000', // Simple format
-                    image: 'https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=400&h=300&fit=crop'
-                }
-            ];
-            
-            // Auto-format the default products
-            const formattedProducts = defaultProducts.map(product => {
-                return {
-                    ...product,
-                    price: this.formatPriceToEGP(product.price)
-                };
-            });
-            
-            localStorage.setItem('products', JSON.stringify(formattedProducts));
-        }
+  async ensureDefaultData() {
+    const hasData =
+      localStorage.getItem("categories") &&
+      localStorage.getItem("products") &&
+      localStorage.getItem("content");
 
-        // Default content
-        if (!localStorage.getItem('content')) {
-            const defaultContent = {
-                'hero-title': 'حلول أنابيب الصلب المتميزة',
-                'hero-subtitle': 'نصنع أنابيب الصلب عالية الجودة للتطبيقات الصناعية والتجارية في جميع أنحاء العالم',
-                'intro-title': 'مرحبًا بكم في SteelFlow Pipes',
-                'intro-text': 'مع أكثر من 25 عامًا من الخبرة في تصنيع أنابيب الصلب، نقدم حلول أنابيب قوية وموثوقة لتطبيقات النفط والغاز وأنظمة المياه والتطبيقات الصناعية. التزامنا بالجودة والابتكار يجعلنا الخيار المفضل عالميًا.',
-                'about-history-title': 'تاريخنا',
-                'about-history-text': 'تأسست SteelFlow Pipes في عام 1998 كوحدة تصنيع صغيرة برؤية لإحداث ثورة في صناعة أنابيب الصلب. على مر السنين، نمينا لتصبح قائدًا عالميًا، نخدم العملاء في أكثر من 50 دولة بحلولنا المتميزة لأنابيب الصلب.',
-                'about-mission-title': 'مهمتنا',
-                'about-mission-text': 'تقديم حلول مبتكرة وعالية الجودة لأنابيب الصلب تتجاوز توقعات العملاء مع الحفاظ على أعلى معايير السلامة والموثوقية والمسؤولية البيئية.',
-                'about-vision-title': 'رؤيتنا',
-                'about-vision-text': 'أن نكون الشريك الأكثر ثقة في العالم في تصنيع أنابيب الصلب، ودفع التقدم من خلال الابتكار التكنولوجي والممارسات المستدامة.',
-                'projects-title': 'المشاريع الرئيسية',
-                'certifications-title': 'الشهادات والجوائز',
-                'milestones-title': 'محطات الشركة'
-            };
-            localStorage.setItem('content', JSON.stringify(defaultContent));
-        }
-
-            if (!localStorage.getItem('footerContent')) {
-                const defaultFooterContent = {
-                    companyName: 'توب ستيل',
-                    companyDescription: 'الشركة الرائدة في تصنيع أنابيب الصلب المتميزة منذ عام 1998.',
-                    email: 'info@top-steel.com',
-                    phone: '+20 123 456 7890',
-                    address: 'المنطقة الصناعية، مدينة العبور، القاهرة',
-                    facebook: 'https://facebook.com/topsteel',
-         
-                    copyright: '&copy; 2024 توب ستيل. جميع الحقوق محفوظة.'
-                };
-                localStorage.setItem('footerContent', JSON.stringify(defaultFooterContent));
-            }
-        } 
-
-
-            // Add footer content methods
-        getFooterContent() {
-            return JSON.parse(localStorage.getItem('footerContent')) || {};
-        }
-
-        updateFooterContent(updates) {
-            const footerContent = this.getFooterContent();
-            Object.keys(updates).forEach(key => {
-                footerContent[key] = updates[key];
-            });
-            localStorage.setItem('footerContent', JSON.stringify(footerContent));
-            this.updateNavigationFooter();
-        }
-
-        updateNavigationFooter() {
-            if (window.navigation) {
-                const footerContent = this.getFooterContent();
-                window.navigation.updateFooter(footerContent);
-            }
-        }
-
-
-    // Category methods
-    getCategories() {
-        return JSON.parse(localStorage.getItem('categories')) || [];
+    if (!hasData) {
+      console.log("ℹ️ Setting up default data...");
+      await this.setupDefaultData();
     }
+  }
 
-    addCategory(category) {
-        const categories = this.getCategories();
-        category.id = Date.now();
-        categories.push(category);
-        localStorage.setItem('categories', JSON.stringify(categories));
-        return category;
+  async setupDefaultData() {
+    const defaultCategories = [
+      {
+        id: "1",
+        name: "الأنابيب غير الملحومة",
+        description: "أنابيب الصلب غير الملحومة عالية الجودة للتطبيقات عالية الضغط",
+        image:
+          "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=400&h=300&fit=crop",
+      },
+      {
+        id: "2",
+        name: "الأنابيب الملحومة",
+        description: "أنابيب الصلب الملحومة المتينة للتطبيقات الصناعية المختلفة",
+        image:
+          "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop",
+      },
+    ];
+    localStorage.setItem("categories", JSON.stringify(defaultCategories));
+
+    const defaultProducts = [
+      {
+        id: "1",
+        categoryId: "1",
+        name: "أنبوب API 5L غير الملحوم",
+        description: "أنبوب غير ملحوم عالي القوة لنقل النفط والغاز",
+        specs: "الحجم: 2-24 بوصة\nالمادة: الصلب الكربوني\nالمعايير: API 5L, ASTM A106",
+        price: "٦٥٠ - ٢٥٠٠ جنيه",
+        image:
+          "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop",
+      },
+    ];
+    localStorage.setItem("products", JSON.stringify(defaultProducts));
+
+    const defaultContent = {
+      "hero-title": "حلول أنابيب الصلب المتميزة",
+      "hero-subtitle":
+        "نصنع أنابيب الصلب عالية الجودة للتطبيقات الصناعية والتجارية في جميع أنحاء العالم",
+      "intro-title": "مرحبًا بكم في توب ستيل",
+      "intro-text": "أكثر من 25 عامًا من الخبرة في تصنيع أنابيب الصلب.",
+    };
+    localStorage.setItem("content", JSON.stringify(defaultContent));
+
+    const defaultFooter = {
+      companyName: "توب ستيل",
+      companyDescription: "الشركة الرائدة في تصنيع أنابيب الصلب المتميزة منذ عام 1998.",
+      email: "info@top-steel.com",
+      phone: "+20 123 456 7890",
+      address: "المنطقة الصناعية، مدينة العبور، القاهرة",
+      facebook: "https://facebook.com/topsteel",
+      copyright: "Designed By Abdelrhman A. Eliwa",
+    };
+    localStorage.setItem("footerContent", JSON.stringify(defaultFooter));
+
+    const defaultSlides = [
+      {
+        id: "1",
+        image:
+          "https://images.unsplash.com/photo-1581094794322-7c6dceeecb91?auto=format&fit=crop&w=1000&q=80",
+        title: "حلول أنابيب الصلب المتميزة",
+        subtitle:
+          "نصنع أنابيب الصلب عالية الجودة للتطبيقات الصناعية والتجارية في جميع أنحاء العالم",
+        active: true,
+      },
+    ];
+    localStorage.setItem("heroSlides", JSON.stringify(defaultSlides));
+
+    if (this.isOnline) await this.saveAllDataToFirestore();
+  }
+
+  // =============================================================
+  // 🔹 Firestore Getters
+  // =============================================================
+  async getProductsFromFirestore() {
+    try {
+      const snapshot = await db
+        .collection("websiteData")
+        .doc("products")
+        .collection("items")
+        .get();
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+      console.error("❌ Error fetching products:", e);
+      return [];
     }
+  }
 
-    updateCategory(id, updatedCategory) {
-        const categories = this.getCategories();
-        const index = categories.findIndex(cat => cat.id === id);
-        if (index !== -1) {
-            categories[index] = { ...categories[index], ...updatedCategory };
-            localStorage.setItem('categories', JSON.stringify(categories));
-            return true;
-        }
-        return false;
+  async getCategoriesFromFirestore() {
+    try {
+      const snapshot = await db
+        .collection("websiteData")
+        .doc("categories")
+        .collection("items")
+        .get();
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+      console.error("❌ Error fetching categories:", e);
+      return [];
     }
+  }
 
-    deleteCategory(id) {
-        const categories = this.getCategories();
-        const filteredCategories = categories.filter(cat => cat.id !== id);
-        localStorage.setItem('categories', JSON.stringify(filteredCategories));
-        
-        // Also delete products in this category
-        this.deleteProductsByCategory(id);
+  // =============================================================
+  // 🔹 Cache Loaders
+  // =============================================================
+  async loadAllCategories() {
+    this.categories = await this.getCategoriesFromFirestore();
+    localStorage.setItem("categories", JSON.stringify(this.categories));
+  }
+
+  async loadAllProducts() {
+    this.products = await this.getProductsFromFirestore();
+    localStorage.setItem("products", JSON.stringify(this.products));
+  }
+
+  // =============================================================
+  // 🔹 Firestore Save & Load
+  // =============================================================
+  async saveAllDataToFirestore() {
+    if (!this.isOnline || !db) return;
+    try {
+      const data = {
+        categories: this.getCategories(),
+        products: this.getProducts(),
+        content: this.getContent(),
+        footerContent: this.getFooterContent(),
+        slides: await this.getSlides(),
+        lastUpdated: new Date(),
+      };
+      await db.collection("websiteData").doc("allData").set(data, { merge: true });
+      console.log("✅ All data saved to Firestore");
+    } catch (e) {
+      console.error("❌ Error saving all data:", e);
     }
+  }
 
-    // Product methods
-    getProducts() {
-        return JSON.parse(localStorage.getItem('products')) || [];
-    }
-
-    getProductsByCategory(categoryId) {
-        const products = this.getProducts();
-        return products.filter(product => product.categoryId === parseInt(categoryId));
-    }
-
-addProduct(product) {
-    const products = this.getProducts();
-    product.id = Date.now();
-    product.categoryId = parseInt(product.categoryId);
-    
-    // Auto-format price to EGP
-    product.price = this.formatPriceToEGP(product.price);
-    
-    products.push(product);
-    localStorage.setItem('products', JSON.stringify(products));
-    return product;
-}
-
-updateProduct(id, updatedProduct) {
-    const products = this.getProducts();
-    const index = products.findIndex(prod => prod.id === id);
-    if (index !== -1) {
-        // Auto-format price to EGP
-        updatedProduct.price = this.formatPriceToEGP(updatedProduct.price);
-        
-        products[index] = { ...products[index], ...updatedProduct };
-        localStorage.setItem('products', JSON.stringify(products));
-        return true;
-    }
-    return false;
-}
-
-// Enhanced price formatting in data.js
-formatPriceToEGP(price) {
-    if (!price || price.trim() === '') return 'السعر عند الطلب';
-    
-    let formattedPrice = price.trim();
-    
-    // Remove any currency indicators
-    formattedPrice = formattedPrice
-        .replace(/جنيه/g, '')
-        .replace(/\$/g, '')
-        .replace(/EGP/g, '')
-        .replace(/ج\.م/g, '')
-        .replace(/ريال/g, '')
-        .replace(/ر\.س/g, '')
-        .replace(/دينار/g, '')
-        .replace(/د\.ك/g, '')
-        .replace(/درهم/g, '')
-        .replace(/د\.إ/g, '')
-        .trim();
-    
-    // Handle different separators
-    formattedPrice = formattedPrice
-        .replace(/,/g, '-')  // Replace commas with dashes
-        .replace(/\s+/g, '-') // Replace spaces with dashes
-        .replace(/--+/g, '-') // Remove multiple dashes
-        .replace(/^-|-$/g, ''); // Remove leading/trailing dashes
-    
-    // Convert to Eastern Arabic numerals
-    formattedPrice = this.convertToEasternArabic(formattedPrice);
-    
-    // Format single price
-    if (!formattedPrice.includes('-')) {
-        return `${formattedPrice} جنيه`;
-    }
-    
-    // Format price range
-    const priceParts = formattedPrice.split('-');
-    if (priceParts.length === 2) {
-        return `${priceParts[0]} - ${priceParts[1]} جنيه`;
-    }
-    
-    // Fallback for complex ranges
-    return `${formattedPrice} جنيه`;
-}
-
-// Enhanced numeral conversion with proper range handling
-convertToEasternArabic(text) {
-    const westernArabic = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const easternArabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    
-    // Handle price ranges separately
-    if (text.includes('-')) {
-        const parts = text.split('-');
-        const convertedParts = parts.map(part => {
-            let converted = part.trim();
-            westernArabic.forEach((num, index) => {
-                const regex = new RegExp(num, 'g');
-                converted = converted.replace(regex, easternArabic[index]);
-            });
-            return converted;
+  async loadAllDataFromFirestore() {
+    if (!this.isOnline || !db) return;
+    try {
+      const docSnap = await db.collection("websiteData").doc("allData").get();
+      if (docSnap.exists) {
+        const data = docSnap.data();
+        Object.keys(data).forEach(key => {
+          if (typeof data[key] === "object") {
+            localStorage.setItem(key, JSON.stringify(data[key]));
+          }
         });
-        return convertedParts.join(' - ');
+        console.log("✅ Data loaded from Firestore");
+      }
+    } catch (e) {
+      console.error("❌ Error loading Firestore data:", e);
     }
-    
-    // Single price
-    let converted = text;
-    westernArabic.forEach((num, index) => {
-        const regex = new RegExp(num, 'g');
-        converted = converted.replace(regex, easternArabic[index]);
-    });
-    
-    return converted;
-}
-    deleteProduct(id) {
-        const products = this.getProducts();
-        const filteredProducts = products.filter(prod => prod.id !== id);
-        localStorage.setItem('products', JSON.stringify(filteredProducts));
+  }
+
+  // =============================================================
+  // 🔹 Content & Footer
+  // =============================================================
+  getContent() {
+    try {
+      return JSON.parse(localStorage.getItem("content")) || {};
+    } catch {
+      return {};
     }
+  }
 
-    deleteProductsByCategory(categoryId) {
-        const products = this.getProducts();
-        const filteredProducts = products.filter(prod => prod.categoryId !== parseInt(categoryId));
-        localStorage.setItem('products', JSON.stringify(filteredProducts));
+  async updateMultipleContent(updates) {
+    const current = this.getContent();
+    const merged = { ...current, ...updates };
+    localStorage.setItem("content", JSON.stringify(merged));
+    if (this.isOnline && db) {
+      await db.collection("websiteData").doc("content").set(merged, { merge: true });
     }
+    console.log("✅ Content updated");
+  }
 
-    // Content methods
-    getContent() {
-        return JSON.parse(localStorage.getItem('content')) || {};
+  getFooterContent() {
+    try {
+      return JSON.parse(localStorage.getItem("footerContent")) || {};
+    } catch {
+      return {};
     }
+  }
 
-    updateContent(key, value) {
-        const content = this.getContent();
-        content[key] = value;
-        localStorage.setItem('content', JSON.stringify(content));
+  async updateFooterContent(updates) {
+    const current = this.getFooterContent();
+    const merged = { ...current, ...updates };
+    localStorage.setItem("footerContent", JSON.stringify(merged));
+    if (this.isOnline && db) {
+      await db.collection("websiteData").doc("footer").set(merged, { merge: true });
     }
+    console.log("✅ Footer updated");
+  }
 
-    updateMultipleContent(updates) {
-        const content = this.getContent();
-        Object.keys(updates).forEach(key => {
-            content[key] = updates[key];
-        });
-        localStorage.setItem('content', JSON.stringify(content));
+  // =============================================================
+  // 🔹 Categories CRUD
+  // =============================================================
+  getCategories() {
+    try {
+      return JSON.parse(localStorage.getItem("categories")) || [];
+    } catch {
+      return [];
     }
+  }
 
-    // Featured products (first 4 products)
-    getFeaturedProducts() {
-        const products = this.getProducts();
-        return products.slice(0, 4);
+  async addCategory(category) {
+    const id = Date.now().toString();
+    const cats = this.getCategories();
+    const newCat = { id, ...category };
+    cats.push(newCat);
+    localStorage.setItem("categories", JSON.stringify(cats));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("categories")
+        .collection("items")
+        .doc(id)
+        .set(newCat);
     }
+    console.log("✅ Category added");
+  }
 
-    // Slideshow methods
-getSlides() {
-    return JSON.parse(localStorage.getItem('heroSlides')) || [];
-}
+  async updateCategory(id, updated) {
+    const cats = this.getCategories();
+    const idx = cats.findIndex(c => c.id === id);
+    if (idx !== -1) cats[idx] = { id, ...updated };
+    localStorage.setItem("categories", JSON.stringify(cats));
 
-addSlide(slide) {
-    const slides = this.getSlides();
-    slide.id = Date.now();
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("categories")
+        .collection("items")
+        .doc(String(id))
+        .set(updated, { merge: true });
+    }
+    console.log("✅ Category updated");
+  }
+
+  async deleteCategory(id) {
+    const cats = this.getCategories().filter(c => c.id !== id);
+    localStorage.setItem("categories", JSON.stringify(cats));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("categories")
+        .collection("items")
+        .doc(String(id))
+        .delete();
+    }
+    console.log("✅ Category deleted");
+  }
+
+  
+  
+
+  // =============================================================
+  // 🔹 Products CRUD
+  // =============================================================
+  getProducts() {
+    try {
+      return JSON.parse(localStorage.getItem("products")) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  
+  async addProduct(product) {
+    const id = Date.now().toString();
+    const prods = this.getProducts();
+    const newProd = { id, ...product };
+    prods.push(newProd);
+    localStorage.setItem("products", JSON.stringify(prods));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("products")
+        .collection("items")
+        .doc(id)
+        .set(newProd);
+    }
+    console.log("✅ Product added");
+  }
+
+  async updateProduct(id, updated) {
+    const prods = this.getProducts();
+    const idx = prods.findIndex(p => p.id === id);
+    if (idx !== -1) prods[idx] = { id, ...updated };
+    localStorage.setItem("products", JSON.stringify(prods));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("products")
+        .collection("items")
+        .doc(String(id))
+        .set(updated, { merge: true });
+    }
+    console.log("✅ Product updated");
+  }
+
+  async deleteProduct(id) {
+    const prods = this.getProducts().filter(p => p.id !== id);
+    localStorage.setItem("products", JSON.stringify(prods));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("products")
+        .collection("items")
+        .doc(String(id))
+        .delete();
+    }
+    console.log("✅ Product deleted");
+  }
+
+  // =============================================================
+  // 🔹 Slides CRUD
+  // =============================================================
+  async getSlides() {
+    try {
+      if (this.isOnline && db) {
+        const snap = await db
+          .collection("websiteData")
+          .doc("slides")
+          .collection("items")
+          .get();
+        const slides = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        localStorage.setItem("heroSlides", JSON.stringify(slides));
+        return slides;
+      }
+    } catch (e) {
+      console.error("❌ getSlides Firestore error:", e);
+    }
+    return JSON.parse(localStorage.getItem("heroSlides")) || [];
+  }
+
+  async addSlide(slide) {
+    const id = Date.now().toString();
+    slide.id = id;
+    const slides = await this.getSlides();
     slides.push(slide);
-    localStorage.setItem('heroSlides', JSON.stringify(slides));
-    this.updateNavigationSlides();
-    return slide;
-}
+    localStorage.setItem("heroSlides", JSON.stringify(slides));
 
-updateSlide(id, updatedSlide) {
-    const slides = this.getSlides();
-    const index = slides.findIndex(slide => slide.id === id);
-    if (index !== -1) {
-        slides[index] = { ...slides[index], ...updatedSlide };
-        localStorage.setItem('heroSlides', JSON.stringify(slides));
-        this.updateNavigationSlides();
-        return true;
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("slides")
+        .collection("items")
+        .doc(id)
+        .set(slide);
     }
-    return false;
-}
+    console.log("✅ Slide added");
+  }
 
-toggleSlide(id) {
-    const slides = this.getSlides();
-    const index = slides.findIndex(slide => slide.id === id);
-    if (index !== -1) {
-        slides[index].active = !slides[index].active;
-        localStorage.setItem('heroSlides', JSON.stringify(slides));
-        this.updateNavigationSlides();
-        return true;
+  async updateSlide(id, updatedSlide) {
+    const slides = await this.getSlides();
+    const idx = slides.findIndex(s => s.id == id);
+    if (idx !== -1) slides[idx] = { ...slides[idx], ...updatedSlide };
+    localStorage.setItem("heroSlides", JSON.stringify(slides));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("slides")
+        .collection("items")
+        .doc(String(id))
+        .set(updatedSlide, { merge: true });
     }
-    return false;
-}
+    console.log("✅ Slide updated");
+  }
 
-moveSlide(id, direction) {
-    const slides = this.getSlides();
-    const index = slides.findIndex(slide => slide.id === id);
-    if (index !== -1 && index + direction >= 0 && index + direction < slides.length) {
-        const temp = slides[index];
-        slides[index] = slides[index + direction];
-        slides[index + direction] = temp;
-        localStorage.setItem('heroSlides', JSON.stringify(slides));
-        this.updateNavigationSlides();
-        return true;
+  async deleteSlide(id) {
+    const slides = await this.getSlides();
+    const filtered = slides.filter(s => s.id != id);
+    localStorage.setItem("heroSlides", JSON.stringify(filtered));
+
+    if (this.isOnline && db) {
+      await db
+        .collection("websiteData")
+        .doc("slides")
+        .collection("items")
+        .doc(String(id))
+        .delete();
     }
-    return false;
+    console.log("✅ Slide deleted");
+  }
+
+  // =============================================================
+  // 🔹 Real-time Sync
+  // =============================================================
+  subscribeToFirestoreUpdates() {
+    if (!this.isOnline || !db) return;
+    db.collection("websiteData").doc("allData").onSnapshot(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        Object.keys(data).forEach(k => {
+          if (typeof data[k] === "object") {
+            localStorage.setItem(k, JSON.stringify(data[k]));
+          }
+        });
+        console.log("🔄 Data auto-updated from Firestore");
+      }
+    });
+  }
 }
 
-deleteSlide(id) {
-    const slides = this.getSlides();
-    const filteredSlides = slides.filter(slide => slide.id !== id);
-    localStorage.setItem('heroSlides', JSON.stringify(filteredSlides));
-    this.updateNavigationSlides();
+// =============================================================
+// Initialize
+// =============================================================
+let dataManager = null;
+function initializeDataManager() {
+  dataManager = new DataManager();
+  window.dataManager = dataManager;
+  return dataManager;
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeDataManager);
+} else {
+  initializeDataManager();
 }
 
-updateNavigationSlides() {
-    if (window.navigation) {
-        const slides = this.getSlides();
-        window.navigation.updateSlides(slides);
-    }
-}
-}
+// ===============================
+// DISPLAY FUNCTIONS
+// ===============================
 
-// Initialize data manager
-const dataManager = new DataManager();
+// 🔹 PRODUCTS PAGE → shows all categories
+async function loadProductCategories() {
+  const container = document.getElementById("products-container");
+  if (!container || !window.dataManager) return;
 
-// Utility functions for frontend
-function loadFeaturedProducts() {
-    const featuredContainer = document.getElementById('featured-products');
-    if (!featuredContainer) return;
+  try {
+    const categories = await window.dataManager.getCategoriesFromFirestore();
 
-    const featuredProducts = dataManager.getFeaturedProducts();
-    const categories = dataManager.getCategories();
-
-    featuredContainer.innerHTML = featuredProducts.map(product => {
-        const category = categories.find(cat => cat.id === product.categoryId);
-        return `
-            <div class="product-card">
-                <img src="${product.image}" alt="${product.name}" onerror="this.src='https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop'">
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-                <div class="product-price">${product.price}</div>
-                <div class="product-specs">
-                    <strong>Category:</strong> ${category ? category.name : 'Unknown'}<br>
-                    ${product.specs.replace(/\n/g, '<br>')}
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function loadCategories() {
-    const categoriesContainer = document.getElementById('categories-container');
-    if (!categoriesContainer) return;
-
-    const categories = dataManager.getCategories();
-    
-    categoriesContainer.innerHTML = categories.map(category => `
-        <a href="category.html?category=${category.id}" class="category-card">
-            <img src="${category.image}" alt="${category.name}" onerror="this.src='https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop'">
-            <h3>${category.name}</h3>
-            <p>${category.description}</p>
-        </a>
-    `).join('');
-}
-
-function loadCategoryProducts() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get('category');
-    
-    if (!categoryId) {
-        window.location.href = 'products.html';
-        return;
+    if (!categories.length) {
+      container.innerHTML = `<p>لا توجد فئات متاحة حالياً.</p>`;
+      return;
     }
 
-    const category = dataManager.getCategories().find(cat => cat.id === parseInt(categoryId));
-    if (!category) {
-        window.location.href = 'products.html';
-        return;
+    container.innerHTML = categories
+      .map(
+        c => `
+        <div class="category-card">
+          <img src="${c.image || 'https://via.placeholder.com/400'}" alt="${c.name}">
+          <h3>${c.name}</h3>
+          <p>${c.description || ''}</p>
+          <a href="category.html?categoryId=${c.id}" class="cta-button">عرض المنتجات</a>
+        </div>`
+      )
+      .join("");
+  } catch (e) {
+    console.error("❌ Error loading categories:", e);
+    container.innerHTML = `<p>حدث خطأ أثناء تحميل الفئات.</p>`;
+  }
+}
+
+// 🔹 CATEGORY PAGE → shows all products within selected category
+async function loadCategoryProducts() {
+  const container = document.getElementById("products-container");
+  if (!container || !window.dataManager) return;
+
+  const params = new URLSearchParams(window.location.search);
+  const categoryId = params.get("categoryId");
+
+  try {
+    const products = await window.dataManager.getProductsFromFirestore();
+    const filtered = categoryId
+      ? products.filter(p => String(p.categoryId) === String(categoryId))
+      : products;
+
+    if (!filtered.length) {
+      container.innerHTML = `<p>لا توجد منتجات في هذه الفئة حالياً.</p>`;
+      return;
     }
 
-    // Update page title and description
-    document.getElementById('category-title').textContent = category.name;
-    document.getElementById('category-description').textContent = category.description;
-
-    const productsContainer = document.getElementById('products-container');
-    const products = dataManager.getProductsByCategory(categoryId);
-
-    if (products.length === 0) {
-        productsContainer.innerHTML = '<p class="text-center">No products found in this category.</p>';
-        return;
-    }
-
-    productsContainer.innerHTML = products.map(product => `
+    container.innerHTML = filtered
+      .map(
+        p => `
         <div class="product-card">
-            <img src="${product.image}" alt="${product.name}" onerror="this.src='https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop'">
-            <h3>${product.name}</h3>
-            <p>${product.description}</p>
-            <div class="product-price">${product.price}</div>
-            <div class="product-specs">
-                ${product.specs.replace(/\n/g, '<br>')}
-            </div>
-        </div>
-    `).join('');
+          <img src="${p.image || 'https://via.placeholder.com/400'}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>${p.description || ''}</p>
+          ${p.specs ? `<p class="specs">${p.specs}</p>` : ''}
+          <span class="price">${p.price || ''} جنية</span>
+        </div>`
+      )
+      .join("");
+  } catch (e) {
+    console.error("❌ Error loading products:", e);
+    container.innerHTML = `<p>حدث خطأ أثناء تحميل المنتجات.</p>`;
+  }
 }
 
-// Load dynamic content from localStorage
-function loadDynamicContent() {
-    const content = dataManager.getContent();
-    
-    // Update all elements with data from localStorage
-    Object.keys(content).forEach(key => {
-        const element = document.getElementById(key);
-        if (element) {
-            element.textContent = content[key];
-        }
-        
-        // Also update input fields in admin panel
-        const inputElement = document.getElementById(`${key}-input`);
-        if (inputElement) {
-            inputElement.value = content[key];
-        }
-    });
-}
+// 🔹 HOMEPAGE → featured products (optional)
+async function loadFeaturedProducts() {
+  const container = document.getElementById("featured-products");
+  if (!container || !window.dataManager) return;
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    loadDynamicContent();
-    
-    // Mobile menu toggle
-    const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
+  try {
+    const products = await window.dataManager.getProductsFromFirestore();
+
+    if (!products.length) {
+      container.innerHTML = `<p>لا توجد منتجات مميزة حالياً.</p>`;
+      return;
     }
-    
-    // Close mobile menu when clicking on a link
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
-});
 
-
+    container.innerHTML = products
+      .slice(0, 4)
+      .map(
+        p => `
+        <div class="product-card">
+          <img src="${p.image || 'https://via.placeholder.com/400'}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>${p.description || ''}</p>
+          <span class="price">${p.price || ''}</span>
+        </div>`
+      )
+      .join("");
+  } catch (e) {
+    console.error("❌ Error loading featured products:", e);
+    container.innerHTML = `<p>حدث خطأ أثناء تحميل المنتجات المميزة.</p>`;
+  }
+}
