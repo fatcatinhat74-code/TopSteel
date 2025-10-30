@@ -342,7 +342,7 @@ h4 {
     margin-bottom: 1.5rem;
 }
 
-.product-price {
+.price {
     font-size: 1.3rem;
     font-weight: 700;
     color: #e74c3c;
@@ -350,7 +350,7 @@ h4 {
     font-family: 'Tajawal', 'Cairo', sans-serif;
 }
 
-.product-specs {
+.specs {
     background: #f8f9fa;
     padding: 1.2rem;
     border-radius: 8px;
@@ -1102,4 +1102,36 @@ strong, b {
 
 .achievement-section {
     margin-top:100px;
+}
+
+.price {
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    font-feature-settings: "numr";
+    unicode-bidi: embed;
+    color:#008a00;
+    font-size:35px;
+
+}
+
+/* Copyright Link Styles */
+.copyright-link {
+    color: #bdc3c7 !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 400;
+}
+
+.copyright-link:hover {
+    color: #3498db !important;
+    text-decoration: underline;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+.footer-bottom a {
+    display: inline-block;
+    padding: 0.2rem 0;
+    text-decoration: none;
 }
