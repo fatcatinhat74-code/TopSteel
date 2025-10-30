@@ -1,24 +1,35 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<!-- In all HTML files, update the script loading order -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الإنجازات - توب ستيل</title>
+    <title>توب ستيل</title>
     <link rel="stylesheet" href="css/style-rtl.css">
-        <!-- Cairo Font (Most Popular for Arabic) -->
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<!-- Tajawal Font (Clean & Modern) -->
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-
-<!-- Amiri Font (Elegant & Traditional) -->
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-
-<!-- Changa Font (Modern & Geometric) -->
-<link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
+<link rel="apple-touch-icon" href="images/logo-placeholder.png">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
+    <!-- Load scripts in correct order -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/main.js"></script>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        if (typeof loadFeaturedProducts === 'function') await loadFeaturedProducts();
+        if (typeof loadCategoryProducts === 'function') await loadCategoryProducts();
+    });
+</script>
+</body>
 
     <section class="page-header">
         <div class="container">
@@ -96,7 +107,6 @@
     </section>
 
 
-<script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
+
 </body>
 </html>

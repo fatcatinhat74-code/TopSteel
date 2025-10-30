@@ -6,6 +6,9 @@
     <title>لوحة التحكم - توب ستيل</title>
     <link rel="stylesheet" href="css/style-rtl.css">
     <link rel="stylesheet" href="css/admin.css">
+
+    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
+<link rel="apple-touch-icon" href="images/logo-placeholder.png">
         <!-- Cairo Font (Most Popular for Arabic) -->
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -17,6 +20,22 @@
 
 <!-- Changa Font (Modern & Geometric) -->
 <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<!-- Firebase configuration (initializes firebase & db) -->
+<script src="js/firebase-config.js"></script>
+
+<!-- Data manager (depends on db) -->
+<script src="js/data.js"></script>
+
+<!-- Other scripts -->
+<script src="js/navbar.js"></script>
+<script src="js/admin.js"></script>
+
+
 
 </head>
 <body>
@@ -287,10 +306,7 @@
             
       
             
-            <div class="form-group">
-                <label>نص حقوق النشر:</label>
-                <input type="text" id="footer-copyright-input" data-key="copyright" required placeholder="&copy; 2024 توب ستيل. جميع الحقوق محفوظة.">
-            </div>
+           
             
             <button type="submit" class="cta-button">حفظ محتوى التذييل</button>
         </form>
@@ -300,9 +316,6 @@
     </div>
 
 
-    <script src="js/navbar.js"></script>
-
-    <script src="js/data.js"></script>
-    <script src="js/admin.js"></script>
+ 
 </body>
 </html>
