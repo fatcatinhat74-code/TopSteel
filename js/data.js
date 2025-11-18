@@ -1,5 +1,6 @@
+
 /**************************************************************
- 🔥 DATA MANAGER – FIRESTORE COMPATIBLE (FINAL)
+ 🔥 DATA MANAGER – FIRESTORE ONLY (ENGLISH, NO LOCAL SEED)
 **************************************************************/
 
 let db;
@@ -7,7 +8,7 @@ if (window.firebase) {
   db = firebase.firestore();
   window.db = db;
 } else {
-  console.warn("⚠️ Firebase SDK not loaded yet — will retry later");
+  console.warn("Firebase SDK not loaded yet — will retry later");
 }
 
 // =============================================================
@@ -25,12 +26,6 @@ class DataManager {
     this.initialize();
   }
 
-  async initialize() {
-    await this.initFirebase();
-    await this.initializeData();
-    console.log("✅ DataManager fully initialized");
-  }
-
   // =============================================================
   // 🔹 Firebase Initialization
   // =============================================================
@@ -46,6 +41,7 @@ class DataManager {
       db = firebase.firestore();
       window.db = db;
 
+      // Connectivity test
       await db.collection("websiteData").doc("connectionTest").set({
         test: true,
         timestamp: new Date(),
@@ -53,107 +49,40 @@ class DataManager {
 
       this.isOnline = true;
       this.firebaseInitialized = true;
-      console.log("✅ Connected to Firebase Firestore");
+      console.log("Connected to Firebase Firestore");
 
+      await this.loadAllDataFromFirestore();
       await this.loadAllCategories();
       await this.loadAllProducts();
       await this.getSlides();
-      await this.loadAllDataFromFirestore();
     } catch (error) {
       this.isOnline = false;
-      console.warn("⚠️ Firestore not available, using localStorage:", error.message);
+      console.warn("Firestore not available, running in offline mode:", error.message);
     }
   }
 
   // =============================================================
-  // 🔹 Local Initialization
+  // 🔹 Local Initialization (NO DEFAULT SEED)
   // =============================================================
   async initializeData() {
+    // Admin credentials only (can be changed later to Firebase Auth)
     const adminCredentials = { username: "admin", password: "password123" };
     localStorage.setItem("adminCredentials", JSON.stringify(adminCredentials));
 
-    await this.ensureDefaultData();
+    // Ensure empty containers exist (no branded defaults)
+    if (!localStorage.getItem("content")) localStorage.setItem("content", JSON.stringify({}));
+    if (!localStorage.getItem("footerContent")) localStorage.setItem("footerContent", JSON.stringify({}));
+    if (!localStorage.getItem("categories")) localStorage.setItem("categories", JSON.stringify([]));
+    if (!localStorage.getItem("products")) localStorage.setItem("products", JSON.stringify([]));
+    if (!localStorage.getItem("heroSlides")) localStorage.setItem("heroSlides", JSON.stringify([]));
   }
 
-  async ensureDefaultData() {
-    const hasData =
-      localStorage.getItem("categories") &&
-      localStorage.getItem("products") &&
-      localStorage.getItem("content");
-
-    if (!hasData) {
-      console.log("ℹ️ Setting up default data...");
-      await this.setupDefaultData();
-    }
-  }
-
-  async setupDefaultData() {
-    const defaultCategories = [
-      {
-        id: "1",
-        name: "الأنابيب غير الملحومة",
-        description: "أنابيب الصلب غير الملحومة عالية الجودة للتطبيقات عالية الضغط",
-        image:
-          "https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?w=400&h=300&fit=crop",
-      },
-      {
-        id: "2",
-        name: "الأنابيب الملحومة",
-        description: "أنابيب الصلب الملحومة المتينة للتطبيقات الصناعية المختلفة",
-        image:
-          "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop",
-      },
-    ];
-    localStorage.setItem("categories", JSON.stringify(defaultCategories));
-
-    const defaultProducts = [
-      {
-        id: "1",
-        categoryId: "1",
-        name: "أنبوب API 5L غير الملحوم",
-        description: "أنبوب غير ملحوم عالي القوة لنقل النفط والغاز",
-        specs: "الحجم: 2-24 بوصة\nالمادة: الصلب الكربوني\nالمعايير: API 5L, ASTM A106",
-        price: "٦٥٠ - ٢٥٠٠ جنيه",
-        image:
-          "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=400&h=300&fit=crop",
-      },
-    ];
-    localStorage.setItem("products", JSON.stringify(defaultProducts));
-
-    const defaultContent = {
-      "hero-title": "حلول أنابيب الصلب المتميزة",
-      "hero-subtitle":
-        "نصنع أنابيب الصلب عالية الجودة للتطبيقات الصناعية والتجارية في جميع أنحاء العالم",
-      "intro-title": "مرحبًا بكم في توب ستيل",
-      "intro-text": "أكثر من 25 عامًا من الخبرة في تصنيع أنابيب الصلب.",
-    };
-    localStorage.setItem("content", JSON.stringify(defaultContent));
-
-    const defaultFooter = {
-      companyName: "توب ستيل",
-      companyDescription: "الشركة الرائدة في تصنيع أنابيب الصلب المتميزة منذ عام 1998.",
-      email: "info@top-steel.com",
-      phone: "+20 123 456 7890",
-      address: "المنطقة الصناعية، مدينة العبور، القاهرة",
-      facebook: "https://facebook.com/topsteel",
-      copyright: "Designed By Abdelrhman A. Eliwa",
-    };
-    localStorage.setItem("footerContent", JSON.stringify(defaultFooter));
-
-    const defaultSlides = [
-      {
-        id: "1",
-        image:
-          "https://images.unsplash.com/photo-1581094794322-7c6dceeecb91?auto=format&fit=crop&w=1000&q=80",
-        title: "حلول أنابيب الصلب المتميزة",
-        subtitle:
-          "نصنع أنابيب الصلب عالية الجودة للتطبيقات الصناعية والتجارية في جميع أنحاء العالم",
-        active: true,
-      },
-    ];
-    localStorage.setItem("heroSlides", JSON.stringify(defaultSlides));
-
-    if (this.isOnline) await this.saveAllDataToFirestore();
+  async initialize() {
+    await this.initFirebase();
+    await this.initializeData();
+    await this.loadAllDataFromFirestore();
+    this.subscribeToFirestoreUpdates();
+    console.log("DataManager initialized");
   }
 
   // =============================================================
@@ -161,81 +90,87 @@ class DataManager {
   // =============================================================
   async getProductsFromFirestore() {
     try {
-      const snapshot = await db
-        .collection("websiteData")
-        .doc("products")
-        .collection("items")
-        .get();
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (!this.isOnline || !db) return this.getProducts();
+      const snapshot = await db.collection("websiteData").doc("products").collection("items").get();
+      const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      localStorage.setItem("products", JSON.stringify(products));
+      this.products = products;
+      return products;
     } catch (e) {
-      console.error("❌ Error fetching products:", e);
-      return [];
+      console.error("Error fetching products:", e);
+      return this.getProducts();
     }
   }
 
   async getCategoriesFromFirestore() {
     try {
-      const snapshot = await db
-        .collection("websiteData")
-        .doc("categories")
-        .collection("items")
-        .get();
-      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (!this.isOnline || !db) return this.getCategories();
+      const snapshot = await db.collection("websiteData").doc("categories").collection("items").get();
+      const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      localStorage.setItem("categories", JSON.stringify(categories));
+      this.categories = categories;
+      return categories;
     } catch (e) {
-      console.error("❌ Error fetching categories:", e);
-      return [];
+      console.error("Error fetching categories:", e);
+      return this.getCategories();
     }
   }
 
-  // =============================================================
-  // 🔹 Cache Loaders
-  // =============================================================
-  async loadAllCategories() {
-    this.categories = await this.getCategoriesFromFirestore();
-    localStorage.setItem("categories", JSON.stringify(this.categories));
-  }
-
-  async loadAllProducts() {
-    this.products = await this.getProductsFromFirestore();
-    localStorage.setItem("products", JSON.stringify(this.products));
-  }
-
-  // =============================================================
-  // 🔹 Firestore Save & Load
-  // =============================================================
-  async saveAllDataToFirestore() {
-    if (!this.isOnline || !db) return;
-    try {
-      const data = {
-        categories: this.getCategories(),
-        products: this.getProducts(),
-        content: this.getContent(),
-        footerContent: this.getFooterContent(),
-        slides: await this.getSlides(),
-        lastUpdated: new Date(),
-      };
-      await db.collection("websiteData").doc("allData").set(data, { merge: true });
-      console.log("✅ All data saved to Firestore");
-    } catch (e) {
-      console.error("❌ Error saving all data:", e);
-    }
-  }
+  // Cache loaders
+  async loadAllCategories() { this.categories = await this.getCategoriesFromFirestore(); }
+  async loadAllProducts() { this.products = await this.getProductsFromFirestore(); }
 
   async loadAllDataFromFirestore() {
-    if (!this.isOnline || !db) return;
+    if (!this.isOnline || !db) {
+      console.log("Offline mode: using local storage snapshots");
+      return;
+    }
     try {
+      // Try the consolidated snapshot first
       const docSnap = await db.collection("websiteData").doc("allData").get();
       if (docSnap.exists) {
         const data = docSnap.data();
-        Object.keys(data).forEach(key => {
-          if (typeof data[key] === "object") {
-            localStorage.setItem(key, JSON.stringify(data[key]));
-          }
-        });
-        console.log("✅ Data loaded from Firestore");
+        if (data.content) {
+          localStorage.setItem("content", JSON.stringify(data.content));
+          this.content = data.content;
+        }
+        if (data.categories) {
+          localStorage.setItem("categories", JSON.stringify(data.categories));
+          this.categories = data.categories;
+        }
+        if (data.products) {
+          localStorage.setItem("products", JSON.stringify(data.products));
+          this.products = data.products;
+        }
+        if (data.footerContent) {
+          localStorage.setItem("footerContent", JSON.stringify(data.footerContent));
+          this.footerContent = data.footerContent;
+        }
+        if (data.slides) {
+          localStorage.setItem("heroSlides", JSON.stringify(data.slides));
+          this.slides = data.slides;
+        }
       }
+
+      // Always refresh point documents
+      const contentDoc = await db.collection("websiteData").doc("content").get();
+      if (contentDoc.exists) {
+        localStorage.setItem("content", JSON.stringify(contentDoc.data()));
+        this.content = contentDoc.data();
+      }
+      const footerDoc = await db.collection("websiteData").doc("footer").get();
+      if (footerDoc.exists) {
+        localStorage.setItem("footerContent", JSON.stringify(footerDoc.data()));
+        this.footerContent = footerDoc.data();
+      }
+
+      await this.loadAllCategories();
+      await this.loadAllProducts();
+      await this.getSlides();
+
+      console.log("All data loaded from Firestore");
     } catch (e) {
-      console.error("❌ Error loading Firestore data:", e);
+      console.error("Error loading Firestore data:", e);
     }
   }
 
@@ -243,50 +178,46 @@ class DataManager {
   // 🔹 Content & Footer
   // =============================================================
   getContent() {
-    try {
-      return JSON.parse(localStorage.getItem("content")) || {};
-    } catch {
-      return {};
-    }
+    try { return JSON.parse(localStorage.getItem("content")) || {}; }
+    catch { return {}; }
   }
 
   async updateMultipleContent(updates) {
     const current = this.getContent();
     const merged = { ...current, ...updates };
     localStorage.setItem("content", JSON.stringify(merged));
+    this.content = merged;
+
     if (this.isOnline && db) {
       await db.collection("websiteData").doc("content").set(merged, { merge: true });
     }
-    console.log("✅ Content updated");
+
+    if (typeof updateWebsiteContent === "function") updateWebsiteContent();
+    return merged;
   }
 
   getFooterContent() {
-    try {
-      return JSON.parse(localStorage.getItem("footerContent")) || {};
-    } catch {
-      return {};
-    }
+    try { return JSON.parse(localStorage.getItem("footerContent")) || {}; }
+    catch { return {}; }
   }
 
   async updateFooterContent(updates) {
     const current = this.getFooterContent();
     const merged = { ...current, ...updates };
     localStorage.setItem("footerContent", JSON.stringify(merged));
+    this.footerContent = merged;
+
     if (this.isOnline && db) {
       await db.collection("websiteData").doc("footer").set(merged, { merge: true });
     }
-    console.log("✅ Footer updated");
   }
 
   // =============================================================
   // 🔹 Categories CRUD
   // =============================================================
   getCategories() {
-    try {
-      return JSON.parse(localStorage.getItem("categories")) || [];
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem("categories")) || []; }
+    catch { return []; }
   }
 
   async addCategory(category) {
@@ -295,16 +226,9 @@ class DataManager {
     const newCat = { id, ...category };
     cats.push(newCat);
     localStorage.setItem("categories", JSON.stringify(cats));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("categories")
-        .collection("items")
-        .doc(id)
-        .set(newCat);
+      await db.collection("websiteData").doc("categories").collection("items").doc(id).set(newCat);
     }
-    console.log("✅ Category added");
   }
 
   async updateCategory(id, updated) {
@@ -312,64 +236,36 @@ class DataManager {
     const idx = cats.findIndex(c => c.id === id);
     if (idx !== -1) cats[idx] = { id, ...updated };
     localStorage.setItem("categories", JSON.stringify(cats));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("categories")
-        .collection("items")
-        .doc(String(id))
-        .set(updated, { merge: true });
+      await db.collection("websiteData").doc("categories").collection("items").doc(String(id)).set(updated, { merge: true });
     }
-    console.log("✅ Category updated");
   }
 
   async deleteCategory(id) {
     const cats = this.getCategories().filter(c => c.id !== id);
     localStorage.setItem("categories", JSON.stringify(cats));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("categories")
-        .collection("items")
-        .doc(String(id))
-        .delete();
+      await db.collection("websiteData").doc("categories").collection("items").doc(String(id)).delete();
     }
-    console.log("✅ Category deleted");
   }
-
-  
-  
 
   // =============================================================
   // 🔹 Products CRUD
   // =============================================================
   getProducts() {
-    try {
-      return JSON.parse(localStorage.getItem("products")) || [];
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem("products")) || []; }
+    catch { return []; }
   }
 
-  
   async addProduct(product) {
     const id = Date.now().toString();
     const prods = this.getProducts();
     const newProd = { id, ...product };
     prods.push(newProd);
     localStorage.setItem("products", JSON.stringify(prods));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("products")
-        .collection("items")
-        .doc(id)
-        .set(newProd);
+      await db.collection("websiteData").doc("products").collection("items").doc(id).set(newProd);
     }
-    console.log("✅ Product added");
   }
 
   async updateProduct(id, updated) {
@@ -377,31 +273,17 @@ class DataManager {
     const idx = prods.findIndex(p => p.id === id);
     if (idx !== -1) prods[idx] = { id, ...updated };
     localStorage.setItem("products", JSON.stringify(prods));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("products")
-        .collection("items")
-        .doc(String(id))
-        .set(updated, { merge: true });
+      await db.collection("websiteData").doc("products").collection("items").doc(String(id)).set(updated, { merge: true });
     }
-    console.log("✅ Product updated");
   }
 
   async deleteProduct(id) {
     const prods = this.getProducts().filter(p => p.id !== id);
     localStorage.setItem("products", JSON.stringify(prods));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("products")
-        .collection("items")
-        .doc(String(id))
-        .delete();
+      await db.collection("websiteData").doc("products").collection("items").doc(String(id)).delete();
     }
-    console.log("✅ Product deleted");
   }
 
   // =============================================================
@@ -409,20 +291,18 @@ class DataManager {
   // =============================================================
   async getSlides() {
     try {
-      if (this.isOnline && db) {
-        const snap = await db
-          .collection("websiteData")
-          .doc("slides")
-          .collection("items")
-          .get();
-        const slides = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        localStorage.setItem("heroSlides", JSON.stringify(slides));
-        return slides;
+      if (!this.isOnline || !db) {
+        return JSON.parse(localStorage.getItem("heroSlides")) || [];
       }
+      const snap = await db.collection("websiteData").doc("slides").collection("items").get();
+      const slides = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      localStorage.setItem("heroSlides", JSON.stringify(slides));
+      this.slides = slides;
+      return slides;
     } catch (e) {
-      console.error("❌ getSlides Firestore error:", e);
+      console.error("getSlides error:", e);
+      return JSON.parse(localStorage.getItem("heroSlides")) || [];
     }
-    return JSON.parse(localStorage.getItem("heroSlides")) || [];
   }
 
   async addSlide(slide) {
@@ -431,16 +311,9 @@ class DataManager {
     const slides = await this.getSlides();
     slides.push(slide);
     localStorage.setItem("heroSlides", JSON.stringify(slides));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("slides")
-        .collection("items")
-        .doc(id)
-        .set(slide);
+      await db.collection("websiteData").doc("slides").collection("items").doc(id).set(slide);
     }
-    console.log("✅ Slide added");
   }
 
   async updateSlide(id, updatedSlide) {
@@ -448,32 +321,18 @@ class DataManager {
     const idx = slides.findIndex(s => s.id == id);
     if (idx !== -1) slides[idx] = { ...slides[idx], ...updatedSlide };
     localStorage.setItem("heroSlides", JSON.stringify(slides));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("slides")
-        .collection("items")
-        .doc(String(id))
-        .set(updatedSlide, { merge: true });
+      await db.collection("websiteData").doc("slides").collection("items").doc(String(id)).set(updatedSlide, { merge: true });
     }
-    console.log("✅ Slide updated");
   }
 
   async deleteSlide(id) {
     const slides = await this.getSlides();
     const filtered = slides.filter(s => s.id != id);
     localStorage.setItem("heroSlides", JSON.stringify(filtered));
-
     if (this.isOnline && db) {
-      await db
-        .collection("websiteData")
-        .doc("slides")
-        .collection("items")
-        .doc(String(id))
-        .delete();
+      await db.collection("websiteData").doc("slides").collection("items").doc(String(id)).delete();
     }
-    console.log("✅ Slide deleted");
   }
 
   // =============================================================
@@ -489,125 +348,257 @@ class DataManager {
             localStorage.setItem(k, JSON.stringify(data[k]));
           }
         });
-        console.log("🔄 Data auto-updated from Firestore");
+        console.log("Data auto-updated from Firestore");
       }
     });
   }
 }
 
+// ===============================
+// WEBSITE CONTENT UPDATER
+// ===============================
+function updateWebsiteContent() {
+  if (!window.dataManager) return;
+  const content = window.dataManager.getContent();
+
+  // Navbar website name
+  const websiteNameElement = document.getElementById('navbar-website-name');
+  if (websiteNameElement && content['website-name']) {
+    websiteNameElement.textContent = content['website-name'];
+  }
+
+  // Update page titles
+  if (content['website-name']) updatePageTitles(content['website-name']);
+
+  // Page hero mapping
+  const heroTitle = document.getElementById('hero-title');
+  const heroSubtitle = document.getElementById('hero-subtitle');
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+
+  const pageHeroData = {
+    'about.html': { title: content['page-about-title'], desc: content['page-about-desc'] },
+    'products.html': { title: content['page-products-title'], desc: content['page-products-desc'] },
+    'achievements.html': { title: content['page-achievements-title'], desc: content['page-achievements-desc'] },
+    'admin.html': { title: content['page-admin-title'], desc: content['page-admin-desc'] }
+  };
+
+  if (pageHeroData[page] && heroTitle && heroSubtitle) {
+    if (pageHeroData[page].title) heroTitle.textContent = pageHeroData[page].title;
+    if (pageHeroData[page].desc) heroSubtitle.textContent = pageHeroData[page].desc;
+  }
+
+  // Services
+  updateServicesContent(content);
+  // About
+  updateAboutPageContent(content);
+}
+
+
+
+function updateServicesContent(content) {
+  const servicesTitle = document.getElementById('services-title');
+  if (servicesTitle && content['services-title']) servicesTitle.textContent = content['services-title'];
+  for (let i = 1; i <= 3; i++) {
+    const serviceTitle = document.getElementById(`service-${i}-title`);
+    const serviceDesc = document.getElementById(`service-${i}-desc`);
+    if (serviceTitle && content[`service-${i}-title`]) serviceTitle.textContent = content[`service-${i}-title`];
+    if (serviceDesc && content[`service-${i}-desc`]) serviceDesc.textContent = content[`service-${i}-desc`];
+  }
+}
+
+function updateAboutPageContent(content) {
+  const aboutSections = document.querySelectorAll('.about-section');
+  aboutSections.forEach(section => { if (section) section.style.opacity = '1'; });
+
+  const map = [
+    ['about-history-title','about-history-text'],
+    ['about-mission-title','about-mission-text'],
+    ['about-vision-title','about-vision-text']
+  ];
+  map.forEach(([t, x]) => {
+    const te = document.getElementById(t);
+    const xe = document.getElementById(x);
+    if (te && content[t]) te.textContent = content[t];
+    if (xe && content[x]) xe.textContent = content[x];
+  });
+}
+
+function updatePageTitles(websiteName) {
+  if (!websiteName) return;
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const pageTitles = {
+    'index.html': websiteName,
+    'about.html': `About Us - ${websiteName}`,
+    'products.html': `Products - ${websiteName}`,
+    'category.html': `Categories - ${websiteName}`,
+    'achievements.html': `Achievements - ${websiteName}`,
+    'admin.html': `Admin Panel - ${websiteName}`,
+    'search-results.html': `Search Results - ${websiteName}`
+  };
+  document.title = pageTitles[currentPage] || websiteName;
+}
+
 // =============================================================
-// Initialize
+// Initialize DataManager
 // =============================================================
 let dataManager = null;
 function initializeDataManager() {
   dataManager = new DataManager();
   window.dataManager = dataManager;
-  return dataManager;
+
+  const initContentUpdate = () => {
+    if (window.dataManager && window.dataManager.firebaseInitialized !== undefined) {
+      updateWebsiteContent();
+      document.body.classList.add('content-loaded');
+      setInterval(updateWebsiteContent, 10000);
+    } else {
+      setTimeout(initContentUpdate, 1000);
+    }
+  };
+  setTimeout(initContentUpdate, 1500);
 }
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initializeDataManager);
 } else {
   initializeDataManager();
 }
 
-// ===============================
-// DISPLAY FUNCTIONS
-// ===============================
-
-// 🔹 PRODUCTS PAGE → shows all categories
-async function loadProductCategories() {
-  const container = document.getElementById("products-container");
-  if (!container || !window.dataManager) return;
-
-  try {
-    const categories = await window.dataManager.getCategoriesFromFirestore();
-
-    if (!categories.length) {
-      container.innerHTML = `<p>لا توجد فئات متاحة حالياً.</p>`;
-      return;
-    }
-
-    container.innerHTML = categories
-      .map(
-        c => `
-        <div class="category-card">
-          <img src="${c.image || 'https://via.placeholder.com/400'}" alt="${c.name}">
-          <h3>${c.name}</h3>
-          <p>${c.description || ''}</p>
-          <a href="category.html?categoryId=${c.id}" class="cta-button">عرض المنتجات</a>
-        </div>`
-      )
-      .join("");
-  } catch (e) {
-    console.error("❌ Error loading categories:", e);
-    container.innerHTML = `<p>حدث خطأ أثناء تحميل الفئات.</p>`;
-  }
-}
-
-// 🔹 CATEGORY PAGE → shows all products within selected category
-async function loadCategoryProducts() {
-  const container = document.getElementById("products-container");
-  if (!container || !window.dataManager) return;
-
-  const params = new URLSearchParams(window.location.search);
-  const categoryId = params.get("categoryId");
-
-  try {
-    const products = await window.dataManager.getProductsFromFirestore();
-    const filtered = categoryId
-      ? products.filter(p => String(p.categoryId) === String(categoryId))
-      : products;
-
-    if (!filtered.length) {
-      container.innerHTML = `<p>لا توجد منتجات في هذه الفئة حالياً.</p>`;
-      return;
-    }
-
-    container.innerHTML = filtered
-      .map(
-        p => `
-        <div class="product-card">
-          <img src="${p.image || 'https://via.placeholder.com/400'}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <p>${p.description || ''}</p>
-          ${p.specs ? `<p class="specs">${p.specs}</p>` : ''}
-          <span class="price">${p.price || ''} جنية</span>
-        </div>`
-      )
-      .join("");
-  } catch (e) {
-    console.error("❌ Error loading products:", e);
-    container.innerHTML = `<p>حدث خطأ أثناء تحميل المنتجات.</p>`;
-  }
-}
-
-// 🔹 HOMEPAGE → featured products (optional)
+// =============================================================
+// Page helpers used by pages
+// =============================================================
 async function loadFeaturedProducts() {
-  const container = document.getElementById("featured-products");
-  if (!container || !window.dataManager) return;
+  if (!window.dataManager) return [];
+  const products = await window.dataManager.getProductsFromFirestore();
+  const container = document.getElementById('featured-products-container');
+  if (!container) return products;
+  if (products.length === 0) {
+    container.innerHTML = '<p>No featured products yet.</p>';
+    return products;
+  }
+  const featured = products.slice(0, 3);
+  // Replace this line in loadFeaturedProducts:
+  container.innerHTML = featured.map(product => `
+    <div class="product-card" onclick="navigateToProductDetail('${product.id}')">
+      <div class="product-image-container">
+        <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
+        <div class="image-placeholder" style="display:none;">Image Not Available</div>
+      </div>
+      <h3>${product.name}</h3>
+      <p>${product.description || ''}</p>
+      ${product.specs ? `<div class="specs">${product.specs.replace(/\\n/g, '<br>')}</div>` : ''}
+      <div class="price">${product.price || 'Contact for price'}</div>
+    </div>
+  `).join('');
+  return products;
+}
 
-  try {
-    const products = await window.dataManager.getProductsFromFirestore();
+async function loadProductCategories() {
+  if (!window.dataManager) return [];
+  const categories = await window.dataManager.getCategoriesFromFirestore();
+  const container = document.getElementById('products-container');
+  if (!container) return categories;
+  if (categories.length === 0) {
+    container.innerHTML = '<p>No categories yet.</p>';
+    return categories;
+  }
+  container.innerHTML = categories.map(category => `
+    <div class="category-card" onclick="window.location.href='category.html?categoryId=${category.id}'">
+      <div class="category-image-container">
+        <img src="${category.image || 'images/placeholder-image.png'}" alt="${category.name}" onerror="handleImageError(this)">
+        <div class="image-placeholder" style="display:none;">Image Not Available</div>
+      </div>
+      <div class="category-info">
+        <h3>${category.name}</h3>
+        <p>${category.description || ''}</p>
+      </div>
+    </div>
+  `).join('');
+  return categories;
+}
 
-    if (!products.length) {
-      container.innerHTML = `<p>لا توجد منتجات مميزة حالياً.</p>`;
-      return;
+async function loadCategoryProducts() {
+  if (!window.dataManager) return [];
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryId = urlParams.get('categoryId');
+  if (!categoryId) {
+    window.location.href = 'products.html';
+    return [];
+  }
+  const products = await window.dataManager.getProductsFromFirestore();
+  const categoryProducts = products.filter(p => p.categoryId === categoryId);
+  const categories = await window.dataManager.getCategoriesFromFirestore();
+  const currentCategory = categories.find(c => c.id === categoryId);
+  const titleElement = document.getElementById('category-title');
+  const descElement = document.getElementById('category-description');
+  if (currentCategory) {
+    if (titleElement) titleElement.textContent = currentCategory.name;
+    if (descElement) descElement.textContent = currentCategory.description || '';
+  }
+  const container = document.getElementById('products-container');
+  if (container) {
+    if (categoryProducts.length > 0) {
+// Replace this line in loadCategoryProducts:
+container.innerHTML = categoryProducts.map(product => `
+  <div class="product-card" onclick="navigateToProductDetail('${product.id}')">
+    <div class="product-image-container">
+      <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
+      <div class="image-placeholder" style="display:none;">Image Not Available</div>
+    </div>
+    <h3>${product.name}</h3>
+    <p>${product.description || ''}</p>
+    ${product.specs ? `<div class="specs">${product.specs.replace(/\\n/g, '<br>')}</div>` : ''}
+    <div class="price">${product.price || 'Contact for price'}</div>
+  </div>
+`).join('');
+    } else {
+      container.innerHTML = `
+        <div class="no-products">
+          <p>No products in this category yet.</p>
+          <a href="products.html" class="cta-button">Back to categories</a>
+        </div>
+      `;
     }
+  }
+  return categoryProducts;
 
-    container.innerHTML = products
-      .slice(0, 4)
-      .map(
-        p => `
-        <div class="product-card">
-          <img src="${p.image || 'https://via.placeholder.com/400'}" alt="${p.name}">
-          <h3>${p.name}</h3>
-          <p>${p.description || ''}</p>
-          <span class="price">${p.price || ''}</span>
-        </div>`
-      )
-      .join("");
-  } catch (e) {
-    console.error("❌ Error loading featured products:", e);
-    container.innerHTML = `<p>حدث خطأ أثناء تحميل المنتجات المميزة.</p>`;
+
+}
+
+
+// =============================================================
+// Product Navigation Function
+// =============================================================
+function navigateToProductDetail(productId) {
+  window.location.href = `product.html?productId=${productId}`;
+}
+
+// Make it globally available
+window.navigateToProductDetail = navigateToProductDetail;
+
+
+// Image error helpers
+function handleImageError(img) {
+  const container = img.parentElement;
+  if (container) {
+    img.style.display = 'none';
+    const placeholder = container.querySelector('.image-placeholder');
+    if (placeholder) {
+      placeholder.style.display = 'flex';
+      placeholder.style.alignItems = 'center';
+      placeholder.style.justifyContent = 'center';
+      placeholder.style.height = '200px';
+      placeholder.style.background = '#f5f5f5';
+      placeholder.style.color = '#666';
+      placeholder.style.fontFamily = 'Poppins, sans-serif';
+      placeholder.style.fontSize = '16px';
+      placeholder.style.border = '1px dashed #ddd';
+    }
+  }
+  
+  // Also try to load a fallback online placeholder if local one fails
+  if (img.src.includes('placeholder-image.png')) {
+    img.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+    img.style.display = 'block';
   }
 }
