@@ -1,86 +1,93 @@
-<!-- In all HTML files, update the script loading order -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توب ستيل</title>
-    <link rel="stylesheet" href="css/style-rtl.css">
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-<link rel="apple-touch-icon" href="images/logo-placeholder.png">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <!-- Load scripts in correct order -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
-    
-<script>
-    document.addEventListener('DOMContentLoaded', async function() {
-        if (typeof loadFeaturedProducts === 'function') await loadFeaturedProducts();
-        if (typeof loadCategoryProducts === 'function') await loadCategoryProducts();
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- Hero area is injected by navbar.js -->
+
+  <section class="about-content">
+    <div class="container">
+      <div class="about-section">
+        <h2 id="about-history-title"></h2>
+        <p id="about-history-text"></p>
+      </div>
+
+      <div class="about-section">
+        <h2 id="about-mission-title"></h2>
+        <p id="about-mission-text"></p>
+      </div>
+
+      <div class="about-section">
+        <h2 id="about-vision-title"></h2>
+        <p id="about-vision-text"></p>
+      </div>
+
+      <div class="about-section">
+        <h2>Why Choose Us?</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>Industry Expertise</h3>
+            <p>Extensive experience in scientific instruments and laboratory solutions.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Quality Assurance</h3>
+            <p>Authorized distributors of certified brands with full warranty support.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Regional Presence</h3>
+            <p>Serving clients locally and across the Middle East.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Technical Support</h3>
+            <p>Installation, training, and maintenance by certified engineers.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Wide Product Range</h3>
+            <p>Complete portfolio of analytical instruments, lab equipment, and consumables.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Customer Focus</h3>
+            <p>Tailored solutions and responsive support.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
     });
-</script>
-</body>
+  </script>
 
-<!--
-    <section class="page-header">
-        <div class="container">
-            <h1>من نحن - توب ستيل</h1>
-            <p>تعرف على تاريخنا، مهمتنا، والتزامنا بالتميز</p>
-        </div>
-    </section>
--->
-    <section class="about-content">
-        <div class="container">
-            <div class="about-section">
-                <h2 id="about-history-title">تاريخنا</h2>
-                <p id="about-history-text">تأسست توب ستيل في عام 1998 كوحدة تصنيع صغيرة برؤية لإحداث ثورة في صناعة أنابيب الصلب. على مر السنين، نمينا لتصبح قائدًا عالميًا، نخدم العملاء في أكثر من 50 دولة بحلولنا المتميزة لأنابيب الصلب.</p>
-            </div>
-
-            <div class="about-section">
-                <h2 id="about-mission-title">مهمتنا</h2>
-                <p id="about-mission-text">تقديم حلول مبتكرة وعالية الجودة لأنابيب الصلب تتجاوز توقعات العملاء مع الحفاظ على أعلى معايير السلامة والموثوقية والمسؤولية البيئية.</p>
-            </div>
-
-            <div class="about-section">
-                <h2 id="about-vision-title">رؤيتنا</h2>
-                <p id="about-vision-text">أن نكون الشريك الأكثر ثقة في العالم في تصنيع أنابيب الصلب، ودفع التقدم من خلال الابتكار التكنولوجي والممارسات المستدامة.</p>
-            </div>
-<!--
-            <div class="about-section">
-                <h2>لماذا تختارنا؟</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h3>+25 سنة خبرة</h3>
-                        <p>عقود من الخبرة في تصنيع أنابيب الصلب</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>شهادات الجودة</h3>
-                        <p>متوافق مع معايير ISO 9001 و API 5L و ASTM</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>وصول عالمي</h3>
-                        <p>نخدم العملاء في أكثر من 50 دولة حول العالم</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>الدعم الفني</h3>
-                        <p>خدمة عملاء على مدار الساعة ومساعدة فنية</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
--->
-
-  
+  <script>
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
 </body>
 </html>
