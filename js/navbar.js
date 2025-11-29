@@ -19,7 +19,7 @@ this.navbarHTML = `
             <!-- Rest of the navbar remains the same -->
             <div class="search-container">
                 <div class="search-box">
-                    <input type="text" id="search-input" placeholder="Search Products ..." class="search-input">
+                    <input type="text" id="search-input" placeholder="أبحث منتجاتنا ..." class="search-input">
                     <button class="search-button" onclick="navigation.performSearch()">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="8"></circle>
@@ -31,10 +31,10 @@ this.navbarHTML = `
             </div>
             
             <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="products.html" class="nav-link">Products</a></li>
-                <li><a href="about.html" class="nav-link">About Us</a></li>
-                <li><a href="#footer-company-description" class="nav-link">Contact Us</a></li>
+                <li><a href="index.html" class="nav-link">الرئيسية</a></li>
+                <li><a href="products.html" class="nav-link">منتجاتنا</a></li>
+                <li><a href="about.html" class="nav-link">من نحن</a></li>
+                <li><a href="#footer-company-description" class="nav-link">تواصل معنا</a></li>
             </ul>
             <div class="hamburger">
                 <span></span><span></span><span></span>
@@ -63,7 +63,7 @@ this.navbarHTML = `
                 <div class="hero-background"></div>
                 <div class="hero-content">
                     <h1 id="hero-title"></h1>
-                    <p id="hero-subtitle"> Discover all products available under this category, with detailed specifications</p>
+                    <p id="hero-subtitle"> اكتشف جميع المنتجات المتوفرة ضمن هذه الفئة، مع المواصفات التفصيلية</p>
            
                 </div>
             </section>
@@ -74,7 +74,7 @@ this.navbarHTML = `
         this.slides = [];
         this.footerContent = {};
         this.searchTimeout = null;
-        this.allProducts = [];
+        this.all = [];
         this.currentSearchTerm = '';
         this.currentSearchResults = [];
     }
@@ -88,7 +88,7 @@ this.navbarHTML = `
         await this.waitForDataManager();
 
         await this.loadFooterContent();
-        if (this.isHomepage()) await this.loadSlideshow();
+        if (this.isالرئيسيةpage()) await this.loadSlideshow();
 
         this.setActiveNavLink();
         this.initMobileMenu();
@@ -325,27 +325,27 @@ this.navbarHTML = `
                         <p id="footer-company-description">${this.footerContent.companyDescription || ' '}</p>
                     </div>
                     <div class="footer-section">
-                        <h4> Contact Us</h4>
-                        <p><strong> Email:</strong> ${this.footerContent.email || 'info@top-steel.com'}</p>
-                        <p><strong>Phone:</strong> ${this.footerContent.phone || ''}</p>
-                        <p><strong>Address:</strong> ${this.footerContent.address || ''}</p>
+                        <h4> تواصل معنا</h4>
+                        <p><strong> البريد الألكتروني:</strong> ${this.footerContent.email || 'info@top-steel.com'}</p>
+                        <p><strong>الهاتف:</strong> ${this.footerContent.phone || ''}</p>
+                        <p><strong>العنوان:</strong> ${this.footerContent.address || ''}</p>
                     </div>
                     <div class="footer-section">
-                        <h4>Hyperlinks </h4>
+                        <h4>الروابط</h4>
                         <ul>
-                            <li><a href="index.html">HOME</a></li>
-                            <li><a href="products.html">PRODUCTS</a></li>
-                            <li><a href="about.html">About Us</a></li>
+                            <li><a href="index.html">الرئيسية</a></li>
+                            <li><a href="products.html">منتجاتنا</a></li>
+                            <li><a href="about.html">من نحن</a></li>
                         </ul>
                     </div>
                     <div class="footer-section">
-                        <h4>Social Media </h4>
+                        <h4>صفحاتنا</h4>
                         <ul>
                             ${this.footerContent.facebook ? `
-                                <li><a href="${this.footerContent.facebook}" target="_blank" class="social-link">Facebook</a></li>
+                                <li><a href="${this.footerContent.facebook}" target="_blank" class="social-link">فيسبوك</a></li>
                             ` : ''}
                             ${this.footerContent.whatsapp ? `
-                                <li><a href="https://wa.me/${this.footerContent.whatsapp}" target="_blank" class="social-link">WhatsApp</a></li>
+                                <li><a href="https://wa.me/${this.footerContent.whatsapp}" target="_blank" class="social-link">واتساب</a></li>
                             ` : ''}
                         </ul>
                     </div>
