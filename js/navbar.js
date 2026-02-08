@@ -80,23 +80,23 @@ this.navbarHTML = `
     }
 
       // =======================================================
-    async init() {
-        await this.waitForDOM();
+async init() {
+    await this.waitForDOM();
 
-        document.body.insertAdjacentHTML('afterbegin', this.navbarHTML);
-        this.insertHeroSection();
-        await this.waitForDataManager();
+    document.body.insertAdjacentHTML('afterbegin', this.navbarHTML);
+    this.insertHeroSection();
+    await this.waitForDataManager();
 
-        await this.loadFooterContent();
-        if (this.isالرئيسيةpage()) await this.loadSlideshow();
+    await this.loadFooterContent();
+    if (this.isHomepage()) await this.loadSlideshow(); // Fixed here
 
-        this.setActiveNavLink();
-        this.initMobileMenu();
-        this.updateFooterLinks();
-        this.initSearch();
-        
-        console.log('✅ Navigation initialized with search');
-    }
+    this.setActiveNavLink();
+    this.initMobileMenu();
+    this.updateFooterLinks();
+    this.initSearch();
+    
+    console.log('✅ Navigation initialized with search');
+}
 
     waitForDOM() {
         return new Promise(resolve => {
