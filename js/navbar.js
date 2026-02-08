@@ -98,10 +98,7 @@ async init() {
     console.log('✅ Navigation initialized with search');
 }
 
-    isالرئيسيةpage() {
-    const page = this.getCurrentPage();
-    return page === 'index.html' || page === '' || page === '/';
-}
+
 
     waitForDOM() {
         return new Promise(resolve => {
