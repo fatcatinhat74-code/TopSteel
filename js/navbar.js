@@ -88,7 +88,7 @@ async init() {
     await this.waitForDataManager();
 
     await this.loadFooterContent();
-    if (this.isHomepage()) await this.loadSlideshow(); // Fixed here
+    if (this.isHomepage()) await this.loadSlideshow(); // CHANGE IS HERE
 
     this.setActiveNavLink();
     this.initMobileMenu();
@@ -96,6 +96,11 @@ async init() {
     this.initSearch();
     
     console.log('✅ Navigation initialized with search');
+}
+
+    isالرئيسيةpage() {
+    const page = this.getCurrentPage();
+    return page === 'index.html' || page === '' || page === '/';
 }
 
     waitForDOM() {
