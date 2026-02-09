@@ -68,7 +68,6 @@ this.navbarHTML = `
                 </div>
             </section>
         `;
-
         this.currentSlide = 0;
         this.slideshowInterval = null;
         this.slides = [];
@@ -77,8 +76,13 @@ this.navbarHTML = `
         this.all = [];
         this.currentSearchTerm = '';
         this.currentSearchResults = [];
-    }
 
+      
+    }
+  navigateToProductDetail(productId) {
+        this.hideSearchResults();
+        window.location.href = `product.html?productId=${productId}`;
+        }
       // =======================================================
 async init() {
     await this.waitForDOM();
@@ -147,6 +151,7 @@ async init() {
         }
     }
 
+    
     setupSearchEventListeners() {
         const searchInput = document.getElementById('search-input');
         const searchResults = document.getElementById('search-results');
@@ -272,7 +277,7 @@ async init() {
         const categoryName = this.getCategoryName(product.categoryId);
         
         return `
-            <div class="product-card" onclick="navigateToproductDetails('${product.id}')">
+            <div class="product-card" onclick="navigation.navigateToProductDetail('${product.id}')">
                 <div class="search-result-image">
                     <img src="${product.image || 'https://via.placeholder.com/60'}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/60'">
                 </div>
